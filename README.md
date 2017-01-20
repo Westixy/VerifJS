@@ -10,10 +10,10 @@
 3. add some css for the error message
 ```css
 .verif_error{
-  border-bottom: 1px solid #bb3454 !important;
+  border-color: red;
 }
 .verif_message_error{
-  color:#bb3454;
+  color: red;
 }
 ```
 
@@ -55,20 +55,16 @@ to use :
 
 some html :
 ```html
-<input type="text" data-verif-group="groupName" data-verif="required|text|min_l:6|max_l:20">
-<input type="email" data-verif-group="groupName" data-verif="required|email">
-<input id="btn_verify" type="button">
+<form name="myForm" method="post" action="">
+  <input type="text" data-verif-group="groupName" data-verif="required|text|min_l:6|max_l:20">
+  <input type="email" data-verif-group="groupName" data-verif="required|email">
+  <input id="btn_verify" type="button">
+</form>
 ```
 
 ```javascript
-let btn = document.getElementById('btn_verify');
-btn.addEventListener('click', ()=>{
-  let isOk=VERIF.verifGroup('groupName');
-  if(isOK){
-    console.log('all inputs are ok');
-  }else{
-    console.log('Verification ERROR');
-    return;
-  }
-}
+document.querySelector('#btn_verify').addEventListener('click', ()=>{
+  if(VERIF.verifGroup('groupName'))
+    document.forms["myForm"].submit();
+});
 ```
