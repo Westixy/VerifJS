@@ -1,5 +1,7 @@
 # VerifJS
 
+This script is used to verify field easily
+
 ## Getting stated
 
 1. include the script on the html `<script src="verif.js" ></script>`
@@ -25,6 +27,7 @@
 - `text` : value is [a-zA-Z0-9_ ]* with space
 - `alphanumerique` : value is [a-zA-Z0-9_]* without space
 - `email` : value is an email
+- `phone` : value is a phone
 - `date` : value is like 'dd.mm.yyyy'
 - `time` : value is like 'HH:MM'
 - `date_time` : value is like 'dd.mm.yyyy HH:MM'
@@ -41,6 +44,14 @@
 
 in an other js file type
 ```javascript
+VERIF.addRule(
+  'customRuleName',
+  (data)=>{ return (data.trim()=='Custom :D')},
+  'A custom error message'
+);
+```
+or
+```javascript
 VERIF.RULES.customRuleName={
   control:(data)=>{ return (data.trim()=='Custom :D')},
   errorText:'A custom error message'
@@ -51,7 +62,7 @@ to use :
 <input type="text" data-verif="customRuleName">
 ```
 
-## Verify on button click
+## Verify on button click <small>and submit</small>
 
 some html :
 ```html
@@ -61,7 +72,12 @@ some html :
   <input id="btn_verify" type="button">
 </form>
 ```
-
+and some js :
+```javascript
+let btn=document.getElementById('btn_verify');
+VERIF.verifOnCLick(btn,'myForm','groupName');
+```
+or
 ```javascript
 document.querySelector('#btn_verify').addEventListener('click', ()=>{
   if(VERIF.verifGroup('groupName'))
