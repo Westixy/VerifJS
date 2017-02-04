@@ -4,12 +4,12 @@ This script is used to verify field easily. Also works asynchronously.(ex: with 
 
 ## Getting stated
 
-1. include the script on the html `<script src="verif.js" ></script>` (before fields that you want to verify)
-2. add a `data-verif` attribute to your inputs
+- include the script on the html `<script src="verif.js" ></script>` (before fields that you want to verify)
+- add a `data-verif` attribute to your inputs
 ```html
 <input type="text" data-verif="required|text|min_l:6|max_l:20">
 ```
-3. add some css for the error message
+- add some css for the error message
 ```css
 .verif_error{
   border-color: red;
@@ -24,7 +24,7 @@ This script is used to verify field easily. Also works asynchronously.(ex: with 
 - `required` : value != null
 - `int` : value is an integer
 - `double` : value is a double (or float)
-- `text` : value is [a-zA-Z0-9_ ]* with space
+- `text` : value is [a-zA-Z0-9_ ]* with space and accented characters
 - `alphanumerique` : value is [a-zA-Z0-9_]* without space
 - `email` : value is an email
 - `phone` : value is a phone
@@ -161,8 +161,8 @@ VERIF.verif(document.getElementById('myField'),(res)=>{if(res) console.log('OK')
 
 - `url` : I think its ok for this :)
 - `callback` : it get the text response on param like `(response)=>{JSON.parse(response)}`
-- `method` : _not required_ by default GET and can be `GET|POST|PUT|PATCH|DELETE`
-- `data` : _not required for GET and DELETE_ can be a sting (encoded for uri) or a hash
+- `method` : [_not required_] by default GET and can be `GET|POST|PUT|PATCH|DELETE`
+- `data` : [_not required for GET and DELETE_] can be a string (encoded for uri) or a hash
 
 GET :
 ```javascript
