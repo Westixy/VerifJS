@@ -41,8 +41,9 @@ const VERIF={
             if(before.className.indexOf('verif_message_error')<0){
               before = parent.insertBefore(before_build,me);
             }
-
-            let errArg=VERIF.RULES[rule].argToError||arg;
+            let errArg=arg;
+            if(typeof VERIF.RULES[rule].argToError != 'undefined')
+              errArg = VERIF.RULES[rule].argToError(arg);
             before.textContent=errtxt.replace(/\{0\}/,errArg);
           }
         }
@@ -201,9 +202,9 @@ const VERIF={
       },
       errorText:'La date doit avoir une différence d\'au moins {0}',
       argToError:(arg)=>{
-        let y = Math.ceil(arg/12);
+        let y = Math.floor(arg/12);
         let m = arg%12;
-        return (((y>0)? y+((y==1)?' an':' ans'):'')+((m>0)? ' et ' : '' + ((m>0)? m+' mois':'')));
+        return (((y>0)? y+((y==1)?' an':' ans'):'')+((m>0)? ' et ' : '')+((m>0)? m+' mois':''));
       }
     },
     date_less_diff:{
@@ -217,9 +218,9 @@ const VERIF={
       },
       errorText:'La date doit avoir une différence inférieure à {0}',
       argToError:(arg)=>{
-        let y = Math.ceil(arg/12);
+        let y = Math.floor(arg/12);
         let m = arg%12;
-        return (((y>0)? y+((y==1)?' an':' ans'):'')+((m>0)? ' et ' : '' + ((m>0)? m+' mois':'')));
+        return (((y>0)? y+((y==1)?' an':' ans'):'')+((m>0)? ' et ' : '')+((m>0)? m+' mois':''));
       }
     },
   }
