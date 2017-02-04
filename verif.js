@@ -17,6 +17,11 @@ const VERIF={
     var result=true;
     var resnbr=0;
 
+    if(data=='' && rules.indexOf('required')<0) {
+      endCb(true);
+      return;
+    }
+
     for(let i=0; i<rules.length ; i++){
       let sep=rules[i].split(':');
       let rule=sep[0];
@@ -111,6 +116,32 @@ const VERIF={
     VERIF.RULES[name].errorText=errorText;
     if(argToError!='undefined')
       VERIF.RULES[name].argToError=argToError;
+  },
+  AJAX:(url, callback, method, data)=>{
+    method=method||'GET';
+    let params = data || null;
+    if(params!=null)
+      params = typeof data == 'string' ? data : Object.keys(data).map((k) => {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+      }).join('&');
+
+    let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+    xhr.open(method, url);
+    xhr.onreadystatechange = ()=>{
+      if(xhr.readyState > 3)if(xhr.status === 200) {
+        callback(xhr.responseText);
+      }else{
+        console.error('AJAX ERROR -> xhr status : '+xhr.status);
+      }
+    };
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    if(params!=null){
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.send(params);
+    }else{
+      xhr.send();
+    }
+    return xhr;
   },
   RULES:{
     required:{
@@ -223,6 +254,15 @@ const VERIF={
         return (((y>0)? y+((y==1)?' an':' ans'):'')+((m>0)? ' et ' : '')+((m>0)? m+' mois':''));
       }
     },
+    ajax:{
+      control:(res,data,url)=>{
+        VERIF.AJAX(
+          url+'?data='+encodeURIComponent(data),
+          (cnt)=>{res(JSON.parse(cnt).response);}
+        );
+      },
+      errorText:'La réponse de "{0}" à été négative'
+    }
   }
 }
 window.addEventListener('load', function(e) {

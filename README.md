@@ -39,6 +39,7 @@ This script is used to verify field easily. Also works asynchronously.(ex: with 
 - `date_futur` : date is after now
 - `date_more_diff:<arg>` : difference between value and now is more or equal than arg (in month)
 - `date_more_diff:<arg>` : difference between value and now is less than arg (in month)
+- `ajax:<url>` : Wait for a json like `{"response":true}` for a GET request on `<url>?data=<input.value>`<br>NB : for `url`, dont use "http://...", use `/some/try.php` or `./try.php` or `try.php`
 
 ## Add a custom rule
 
@@ -152,4 +153,31 @@ some html :
 and some js:
 ```javascript
 VERIF.verif(document.getElementById('myField'),(res)=>{if(res) console.log('OK');});
+```
+
+## simple AJAX function
+
+`VERIF.AJAX` have some params
+
+- `url` : I think its ok for this :)
+- `callback` : it get the text response on param like `(response)=>{JSON.parse(response)}`
+- `method` : _not required_ by default GET and can be `GET|POST|PUT|PATCH|DELETE`
+- `data` : _not required for GET and DELETE_ can be a sting (encoded for uri) or a hash
+
+GET :
+```javascript
+VERIF.AJAX(
+  url+'?data='+encodeURIComponent(data),
+  (cnt)=>{res(JSON.parse(cnt).response);}
+);
+```
+
+POST :
+```javascript
+VERIF.AJAX(
+  url,
+  (cnt)=>{res(JSON.parse(cnt).response);},
+  'POST',
+  {data:'data',img:'doge.jpg'}
+);
 ```
