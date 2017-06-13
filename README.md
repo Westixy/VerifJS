@@ -1,6 +1,6 @@
 # VerifJS
 
-This script is used to verify field easily. Also works asynchronously.(ex: with ajax on the control)
+This script is used to verify field easily. Also works asynchronously.(ex: with ajax on the control)<small>compatible : IE10, firefox 45+, chrome</small>
 
 ## Getting stated
 
@@ -27,7 +27,7 @@ This script is used to verify field easily. Also works asynchronously.(ex: with 
 - `text` : value is [a-zA-Z0-9_ ]* with space and accented characters
 - `alphanumerique` : value is [a-zA-Z0-9_]* without space
 - `email` : value is an email
-- `phone` : value is a phone
+- `phone` : value is a phone (International or CH)
 - `date` : value is like 'dd.mm.yyyy'
 - `time` : value is like 'HH:MM'
 - `date_time` : value is like 'dd.mm.yyyy HH:MM'
@@ -38,7 +38,7 @@ This script is used to verify field easily. Also works asynchronously.(ex: with 
 - `date_past` : date is before now
 - `date_futur` : date is after now
 - `date_more_diff:<arg>` : difference between value and now is more or equal than arg (in month)
-- `date_more_diff:<arg>` : difference between value and now is less than arg (in month)
+- `date_less_diff:<arg>` : difference between value and now is less than arg (in month)
 - `ajax:<url>` : Wait for a json like `{"response":true}` for a GET request on `<url>?data=<input.value>`<br>NB : for `url`, dont use "http://...", use `/some/try.php` or `./try.php` or `try.php`
 
 ## Add a custom rule
@@ -48,26 +48,33 @@ in an other js file, type
 VERIF.addRule(
   'customRuleName',
   // arg can be null
-  (result,data,arg)=>{ result(data.trim()==arg)},
+  function(result,data,arg){ result(data.trim()==arg)},
   'A custom error message {0}',
   // not required
-  (arg)=>{return arg+' some text'}
+  function(arg){return arg+' some text'}
 );
 ```
 or
 ```javascript
 VERIF.RULES.customRuleName={
   // arg can be null
-  control:(result,data,arg)=>{ result(data.trim()==arg)},
+  control:function(result,data,arg){ result(data.trim()==arg)},
   errorText:'A custom error message',
   // not required
-  argToError:(arg)=>{return arg+' some text'}
+  argToError:function(arg){return arg+' some text'}
 }
 ```
 to use :
 ```html
                           <!-- arg not required -->
 <input type="text" data-verif="customRuleName:arg">
+```
+
+## Ignore verif onblur (only when verif group or form)
+
+to use :
+```html
+<input data-verif-on-blur="false" type="text" data-verif="required|text|min_l:6|max_l:20">
 ```
 
 ## Verify on button click <small>and submit</small>
@@ -84,13 +91,13 @@ some html :
 ```
 and some js :
 ```javascript
-let btn=document.getElementById('btn_verify');
+var btn=document.getElementById('btn_verify');
 VERIF.onClickSubmitAfterVerifForm(btn,'myForm');
 ```
 or
 ```javascript
-document.querySelector('#btn_verify').addEventListener('click', ()=>{
-  VERIF.verifForm('myForm',(isOk)=>{
+document.querySelector('#btn_verify').addEventListener('click', function(){
+  VERIF.verifForm('myForm',function(isOk){
     if(isOk) document.forms["myForm"].submit();
   });
 });
@@ -108,13 +115,13 @@ some html :
 ```
 and some js :
 ```javascript
-let btn=document.getElementById('btn_verify');
+var btn=document.getElementById('btn_verify');
 VERIF.onClickSubmitAfterVerifGroup(btn,'myForm','groupName');
 ```
 or
 ```javascript
 document.querySelector('#btn_verify').addEventListener('click', ()=>{
-  VERIF.verifGroup('groupName',(isOk)=>{
+  VERIF.verifGroup('groupName',function(isOk){
     if(isOk) document.forms["myForm"].submit();
   });
 });
@@ -133,15 +140,15 @@ some html :
 some js for an array of elements :
 ```javascript
 let elems=document.querySelectorAll('form input[data-verif]');
-VERIF.verifElems(elems,(isOk)=>{if(isOK) console.log('OK');});
+VERIF.verifElems(elems,function(isOk){if(isOK) console.log('OK');});
 ```
 some js for a form :
 ```javascript
-VERIF.verifForm('myForm',(isOk)=>{if(isOK) console.log('OK');});
+VERIF.verifForm('myForm',function(isOk){if(isOK) console.log('OK');});
 ```
 some js for a group :
 ```javascript
-VERIF.verifForm('groupName',(isOk)=>{if(isOK) console.log('OK');});
+VERIF.verifForm('groupName',function(isOk){if(isOK) console.log('OK');});
 ```
 
 ## Verify one field
@@ -152,7 +159,7 @@ some html :
 ```
 and some js:
 ```javascript
-VERIF.verif(document.getElementById('myField'),(res)=>{if(res) console.log('OK');});
+VERIF.verif(document.getElementById('myField'),function(res){if(res) console.log('OK');});
 ```
 
 ## simple AJAX function
@@ -160,7 +167,7 @@ VERIF.verif(document.getElementById('myField'),(res)=>{if(res) console.log('OK')
 `VERIF.AJAX` have some params
 
 - `url` : I think its ok for this :)
-- `callback` : it get the text response on param like `(response)=>{JSON.parse(response)}`
+- `callback` : it get the text response on param like `function(response){JSON.parse(response)}`
 - `method` : [_not required_] by default GET and can be `GET|POST|PUT|PATCH|DELETE`
 - `data` : [_not required for GET and DELETE_] can be a string (encoded for uri) or a hash
 
@@ -168,7 +175,7 @@ GET :
 ```javascript
 VERIF.AJAX(
   url+'?data='+encodeURIComponent(data),
-  (cnt)=>{res(JSON.parse(cnt).response);}
+  function(cnt){res(JSON.parse(cnt).response);}
 );
 ```
 
@@ -176,7 +183,7 @@ POST :
 ```javascript
 VERIF.AJAX(
   url,
-  (cnt)=>{res(JSON.parse(cnt).response);},
+  function(cnt){res(JSON.parse(cnt).response);},
   'POST',
   {data:'data',img:'doge.jpg'}
 );
